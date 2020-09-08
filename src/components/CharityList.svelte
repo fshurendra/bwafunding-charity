@@ -23,9 +23,9 @@ import Modal from "./Modal.svelte";
     return Math.round(Math.abs(delta / oneDay));
   }
 
-  function handleButton() {
-    isModalOpen = true;
-  }
+  // function handleButton() {
+  //   isModalOpen = true;
+  // }
 
   function handleCloseModal() {
     isModalOpen = false;
