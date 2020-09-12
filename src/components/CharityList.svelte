@@ -1,7 +1,6 @@
 <script>
 import Modal from "./Modal.svelte";
 
- 
   export let charities;
   let isModalOpen = false;
 
@@ -23,10 +22,6 @@ import Modal from "./Modal.svelte";
     return Math.round(Math.abs(delta / oneDay));
   }
 
-  // function handleButton() {
-  //   isModalOpen = true;
-  // }
-
   function handleCloseModal() {
     isModalOpen = false;
   }
@@ -41,6 +36,10 @@ import Modal from "./Modal.svelte";
     display: block;
     background-color: rgba(0, 0, 0, 0.45);
   }
+
+  .pledged {
+    margin-right: 2em;
+  }
 </style>
 
  <!-- popularCauses section -->
@@ -54,9 +53,8 @@ import Modal from "./Modal.svelte";
           raise capital from anyone.</p>
       </div><!-- .xs-heading-title END -->
     </div><!-- .row end -->
-    {#if charities !== undefined}
-    {#each charities as charity }
     <div class="row">
+      {#each charities as charity }
       <div class="col-lg-4 col-md-6">
         {#if isModalOpen === true}
         <!-- modal goes here -->
@@ -118,13 +116,13 @@ import Modal from "./Modal.svelte";
           </div><!-- .xs-item-header END -->
           <div class="xs-item-content">
             <ul class="xs-simple-tag xs-mb-20">
-              <li><a href="">{charity.category}</a></li>
+              <li><a href="#">{charity.category}</a></li>
             </ul>
 
             <a href="#" class="xs-post-title xs-mb-30">{charity.title}</a>
 
             <ul class="xs-list-with-content">
-              <li>{formatCurrency(charity.pledged)}<span>Pledged</span></li>
+              <li class="pledged">{formatCurrency(charity.pledged)}<span>Pledged</span></li>
               <li><span class="number-percentage-count number-percentage" data-value="90"
                   data-animation-duration="3500">{calculateFunded(charity.pledged, charity.target)}</span>% <span>Funded</span></li>
               <li>{calculateDaysRemaining(charity.date_end)}<span>Days to go</span></li>
@@ -150,9 +148,8 @@ import Modal from "./Modal.svelte";
           </div><!-- .xs-item-content END -->
         </div><!-- .xs-popular-item END -->
       </div>
+      {/each}
     </div><!-- .row end -->
-    {/each}
-    {/if}
   </div><!-- .container end -->
 </section><!-- End popularCauses section -->
 

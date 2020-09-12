@@ -1,18 +1,42 @@
 <script>
+import router from "page";
 import Footer from "../components/Footer.svelte";
 import Header from "../components/Header.svelte";
-import {charities} from "../data/charities"
+import Loader from "../components/Loader.svelte";
 
 export let params;
-let data;
+let charity, amount, name, email, agree = false;
+let data = getCharity(params.id);
 
-function getCharity(id) {
-  return charities.find(function (charity) {
-    return charity.id === parseInt(id);
-  })
+async function getCharity(id) {
+  const res = await fetch(`https://charity-api-bwa.herokuapp.com/charities/${id}`)
+  return res.json();
 }
 
-data = getCharity(params.id);
+function handleButtonClick() {
+  console.log("ButtonClick");
+}
+
+async function handleForm(event) {
+  charity.pledged = charity.pledged + parseInt(amount);
+  try {
+    const res = await fetch(`https://charity-api-bwa.herokuapp.com/charities/${params.id}`,
+  {
+    method: 'PUT',
+    headers: {
+
+    },
+    body: JSON.stringify(charity)
+  });
+  console.log(res);
+  // redirection
+  router.redirect("/success");
+  } catch(err) {
+    console.log(err);
+  }
+  
+}
+
 </script>
 
 <style>
@@ -32,14 +56,16 @@ data = getCharity(params.id);
 <Header />
     <!-- welcome section -->
     <!--breadcumb start here-->
-    {#if data}
+    {#await data}
+    <Loader />
+    {:then charity}
     <section class="xs-banner-inner-section parallax-window" style=
     "background-image:url('/assets/images/about_bg.jpg')">
       <div class="xs-black-overlay"></div>
       <div class="container">
         <div class="color-white xs-inner-banner-content">
           <h2>Donate Now</h2>
-          <p>{data.title}</p>
+          <p>{charity.title}</p>
           <ul class="xs-breadcumb">
             <li class="badge badge-pill badge-primary">
               <a href="/" class="color-white">Home /</a> Donate
@@ -54,20 +80,20 @@ data = getCharity(params.id);
         <div class="container">
           <div class="row">
             <div class="col-lg-6">
-              <div class="xs-donation-form-images"><img src={data.thumbnail} class="img-responsive" alt=
+              <div class="xs-donation-form-images"><img src={charity.thumbnail} class="img-responsive" alt=
               "Family Images"></div>
             </div>
             <div class="col-lg-6">
               <div class="xs-donation-form-wraper">
                 <div class="xs-heading xs-mb-30">
-                  <h2 class="xs-title">{data.title}</h2>
+                  <h2 class="xs-title">{charity.title}</h2>
                   <p class="small">To learn more about make donate charity
                     with us visit our "<span class="color-green">Contact
                       us</span>" site. By calling <span class=
                       "color-green">+44(0) 800 883 8450</span>.</p><span class=
                       "xs-separetor v2"></span>
                 </div><!-- .xs-heading end -->
-                <form action="#" method="post" id="xs-donation-form" class=
+                <form on:submit|preventDefault={handleForm} action="#" method="post" id="xs-donation-form" class=
                 "xs-donation-form" name="xs-donation-form">
                   <div class="xs-input-group">
                     <label for="xs-donate-name">
@@ -79,7 +105,9 @@ data = getCharity(params.id);
                       name="name" 
                       id="xs-donate-name" 
                       class="form-control"
-                      placeholder="Minimum of $5">
+                      required="true"
+                      bind:value={amount}
+                      placeholder="Your donation in Rupiah">
                   </div><!-- .xs-input-group END -->
                   <div class="xs-input-group">
                     <label for="xs-donate-name">
@@ -91,6 +119,8 @@ data = getCharity(params.id);
                       name="name"
                       id="xs-donate-name"
                       class="form-control"
+                      required="true"
+                      bind:value={name}
                       placeholder="Your awesome name" />
                   </div>
                   <div class="xs-input-group">
@@ -103,16 +133,18 @@ data = getCharity(params.id);
                       name="email"
                       id="xs-donate-email"
                       class="form-control"
+                      required="true"
+                      bind:value={email}
                       placeholder="email@awesome.com" />
                   </div>
                   <div class="xs-input-group" id="xs-input-checkbox">
-                    <input type="checkbox" name="agree" id="xs-donate-agree"/>
+                    <input type="checkbox" name="agree" id="xs-donate-agree" bind:checked={agree}/>
                     <label for="xs-donate-agree">
                       I Agree
                       <span class="color-light-red">**</span>
                     </label>
                   </div><!-- .xs-input-group END -->
-                  <button type="submit" class="btn btn-warning"><span class=
+                  <button type="submit" disabled={!agree} class="btn btn-warning"><span class=
                   "badge"><i class="fa fa-heart"></i></span> Donate now</button>
                 </form><!-- .xs-donation-form #xs-donation-form END -->
               </div>
@@ -121,6 +153,6 @@ data = getCharity(params.id);
         </div><!-- .container end -->
       </section><!-- End donation form section -->
     </main>
-    {/if}
+    {/await}
 
     <Footer /> 
